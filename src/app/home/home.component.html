@@ -1,0 +1,43 @@
+@if(!store.isLoading()){
+    <div class="container">
+        <form [formGroup]="userForm">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="usersList">
+              <tr *ngFor="let userGroup of usersArray.controls; let i = index" [formGroupName]="i">
+                <td>
+                  <input formControlName="id" [readonly]="true" />
+                </td>
+                <td>
+                  <input formControlName="name" [readonly]="!userGroup.get('isEditable')?.value"/>
+                </td>
+                <td>
+                  <input formControlName="username" [readonly]="!userGroup.get('isEditable')?.value"/>
+                </td>
+                <td>
+                  <input formControlName="email" [readonly]="!userGroup.get('isEditable')?.value"/>
+                </td>
+                <td>
+                    <button type="button" (click)="toggleEditMode(i)">
+                      {{ userGroup.get('isEditable')?.value ? 'Save' : 'Edit' }}
+                    </button>
+                  </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+} @else {
+    <div>Loading...</div>
+}
+
+
+  
