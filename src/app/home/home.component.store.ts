@@ -24,12 +24,10 @@ import { FormGroup } from '@angular/forms';
 
 type userState = {
   callState: 'init' | 'loading' | 'loaded' | { error: string };
-  userForm: FormGroup;
 };
 
 const INITIAL_STATE: userState = {
   callState: 'init',
-  userForm: new FormGroup({}),
 };
 
 export const UsersStore = signalStore(
