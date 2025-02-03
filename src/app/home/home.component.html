@@ -1,43 +1,68 @@
-@if(!store.isLoading()){
-    <div class="container">
-        <form [formGroup]="userForm">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody formArrayName="usersList">
-              <tr *ngFor="let userGroup of usersArray.controls; let i = index" [formGroupName]="i">
-                <td>
-                  <input formControlName="id" [readonly]="true" />
-                </td>
-                <td>
-                  <input formControlName="name" [readonly]="!userGroup.get('isEditable')?.value"/>
-                </td>
-                <td>
-                  <input formControlName="username" [readonly]="!userGroup.get('isEditable')?.value"/>
-                </td>
-                <td>
-                  <input formControlName="email" [readonly]="!userGroup.get('isEditable')?.value"/>
-                </td>
-                <td>
-                    <button type="button" (click)="toggleEditMode(i)">
-                      {{ userGroup.get('isEditable')?.value ? 'Save' : 'Edit' }}
-                    </button>
-                  </td>
-              </tr>
-            </tbody>
-          </table>
-        </form>
-      </div>
-} @else {
-    <div>Loading...</div>
-}
-
-
-  
+@if(!store.isLoading() && !store.error()){
+<div class="container">
+  <form [formGroup]="userForm">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="usersList">
+        @for(user of usersArray.controls; track user.get("id"); let id = $index)
+        { @if(!user.get('isEditable')?.value){
+        <tr [formGroupName]="id">
+          <td>
+            {{ user.get("id")?.value }}
+          </td>
+          <td>
+            {{ user.get("name")?.value }}
+          </td>
+          <td>
+            {{ user.get("username")?.value }}
+          </td>
+          <td>
+            {{ user.get("email")?.value }}
+          </td>
+          <td>
+            <button type="button" (click)="toggleEditMode(id)">Edit</button>
+          </td>
+        </tr>
+        } @else{
+        <tr [formGroupName]="id">
+          <td>
+            {{ user.get("id")?.value }}
+          </td>
+          <td>
+            <input
+              formControlName="name"
+              [readonly]="!user.get('isEditable')?.value"
+            />
+          </td>
+          <td>
+            <input
+              formControlName="username"
+              [readonly]="!user.get('isEditable')?.value"
+            />
+          </td>
+          <td>
+            <input
+              formControlName="email"
+              [readonly]="!user.get('isEditable')?.value"
+            />
+          </td>
+          <td>
+            <button type="button" (click)="toggleEditMode(id)">Save</button>
+          </td>
+        </tr>
+        } }
+      </tbody>
+    </table>
+  </form>
+</div>
+} @else if(store.error()) {
+{{ store.error() }}
+} @else if(store.isLoading()) { Loading... }
