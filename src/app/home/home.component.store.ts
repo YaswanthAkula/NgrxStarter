@@ -17,7 +17,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { User } from '../../utils/models/user';
 import { computed, inject } from '@angular/core';
 import { UserService } from '../../services/users.service';
-import { concatMap, pipe, switchMap, tap } from 'rxjs';
+import { concatMap, config, pipe, switchMap, tap } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
 import { LOADED_STATE, LOADING_STATE } from '../../utils/constants/constants';
 import { FormGroup } from '@angular/forms';
@@ -29,6 +29,16 @@ type userState = {
 const INITIAL_STATE: userState = {
   callState: 'init',
 };
+
+function convertToArr(response: any): User[] {
+  const keys = Object.keys(response);
+  let usersArray = [];
+  for(var i=0; i< keys.length; i++) {
+    const user = keys[i]
+    usersArray.push(response[user] as never);
+  }
+  return usersArray;
+}
 
 export const UsersStore = signalStore(
   withState(INITIAL_STATE),
@@ -76,6 +86,27 @@ export const UsersStore = signalStore(
         })
       )
     ),
+    updateAllUsers: rxMethod<User[]>(
+      pipe(
+        concatMap((users: User[]) => {
+          return userService.updateAllUsers(users).pipe(
+            tapResponse({
+              next: (users: User[]) => {
+                const transformedArr =convertToArr(users);
+                console.log(transformedArr);
+                patchState(store, 
+                  updateAllEntities((user) => user))
+              },
+              error: (error: Error) => {
+                patchState(store, {
+                  callState: { error: error.message },
+                });
+              },
+            })
+          )
+        })
+      )
+    )
   })),
   withHooks({
     onInit(store) {

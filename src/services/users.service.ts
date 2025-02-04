@@ -19,4 +19,8 @@ export class UserService {
     const payload = user;
     return this.http.put<User>(`${BASE_URL}${URLS.USERS}/${user.id}`,payload, { responseType: 'json' });
   }
+
+  updateAllUsers(users: User[]): Observable<User[]> {
+    return this.http.post<User[]>(`${BASE_URL}${URLS.USERS}/`,users, { responseType: 'json' })
+  }
 }

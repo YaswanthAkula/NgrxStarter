@@ -1,4 +1,6 @@
 @if(!store.isLoading() && !store.error()){
+
+  <button (click)="toggleButton()">{{updateButton}}</button>
 <div class="container">
   <form [formGroup]="userForm">
     <table>

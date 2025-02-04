@@ -20,6 +20,7 @@ import { User } from '../../utils/models/user';
 export class HomeComponent {
   readonly store = inject(UsersStore);
   readonly userForm: FormGroup;
+   updateButton: string = 'Edit';
 
   constructor(private fb: FormBuilder) {
     this.userForm = this.fb.group({
@@ -34,6 +35,21 @@ export class HomeComponent {
 
   get usersArray(): FormArray {
     return this.userForm.get('usersList') as FormArray;
+  }
+
+  toggleButton(): void {
+    if(this.updateButton === 'Edit') {
+      this.usersArray.controls.map((user) => {
+        user.get('isEditable')?.patchValue(true);
+      })
+      this.updateButton = 'Save'
+    } else {
+      this.usersArray.controls.map((user) => {
+        user.get('isEditable')?.patchValue(false);
+      })
+      this.store.updateAllUsers(this.usersArray.value);
+      this.updateButton = 'Edit'
+    }
   }
 
   loadUsers(users: User[]): void {
